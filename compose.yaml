@@ -12,8 +12,11 @@ services:
     build:
       context: .
       target: final
+    environment:
+      - PORT=8888 #port to Listen
+      - RPC=https://rpc.0xl3.com
     ports:
-      - 9999:9999
+      - 8888:8888
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to

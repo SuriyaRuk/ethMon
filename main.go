@@ -7,6 +7,7 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -34,8 +35,13 @@ func getBlockNumber() (int64, error) {
 		return 0, err
 	}
 
+	rpc := os.Getenv("RPC")
+	if rpc == "" {
+		rpc = "http://127.0.0.1:8545"
+	}
+
 	// Send the request
-	resp, err := http.Post("http://127.0.0.1:8545", "application/json", bytes.NewBuffer(jsonData))
+	resp, err := http.Post(rpc, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		fmt.Println("Error sending request:", err)
 		return 0, err
@@ -98,9 +104,14 @@ func checkSync(w http.ResponseWriter, r *http.Request) {
 func main() {
 
 	http.HandleFunc("/", checkSync)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9999"
+	}
 
-	fmt.Println("Starting server on :9999")
-	err := http.ListenAndServe(":9999", nil)
+	fmt.Printf("Starting server on port %s\n", port)
+
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		panic(err)
 	}
